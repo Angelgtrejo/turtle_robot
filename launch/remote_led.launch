@@ -1,0 +1,42 @@
+<!--
+Proyecto: Toggle LED desde ROS hacia Arduino Uno
+Autor: Jesús López
+Fecha: 25/11/2025
+
+Descripción:
+Este archivo launch de ROS arranca dos nodos:
+1. El puente rosserial_python que conecta ROS con el Arduino Uno por USB.
+2. El script toggle_led.py que publica mensajes std_msgs/Bool en el tópico /toggle_led.
+
+Entorno:
+- Ubuntu 20.04
+- ROS Noetic
+- Arduino Uno con rosserial_arduino
+- Paquete turtle_robot con scripts en Python
+
+Flujo ROS:
+1. El nodo rosserial_python abre el puerto serial (/dev/ttyUSB0) y comunica ROS con Arduino.
+2. El nodo toggle_led.py publica mensajes Bool en /remote_led.
+3. El Arduino Uno, suscrito a /remote_led, enciende/apaga el LED en pin 13.
+4. Todo el flujo se lanza con un solo comando roslaunch.
+
+Ejemplo de ejecución:
+    roslaunch turtle_robot remote_led.launch
+
+Objetivo didáctico:
+- Mostrar cómo un archivo launch puede orquestar varios nodos ROS.
+- Practicar la integración publisher → subscriber entre ROS y Arduino.
+- Documentar claramente el entorno y flujo para reproducibilidad.
+-->
+
+<launch>
+    <!-- Nodo rosserial para comunicar ROS con Arduino Uno -->
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserial_node" output="screen">
+        <!-- Ajusta el puerto según tu VM/Arduino -->
+        <param name="port" value="/dev/arduino"/>
+        <param name="baud" value="57600"/>
+    </node>
+
+    <!-- Nodo Python que publica mensajes Bool en /remote_led -->
+    <node pkg="turtle_robot" type="remote_led.py" name="remote_led_publisher" output="screen"/>
+</launch>
